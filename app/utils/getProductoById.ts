@@ -1,6 +1,6 @@
 export async function getProductoById(id: string) {
     try {
-      const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+      const res = await fetch(`https://fakestoreapi.com/products/${id}`, { cache: 'no-store' });
   
       // Si la respuesta no es correcta, lanzamos un error manejable
       if (!res.ok) {
