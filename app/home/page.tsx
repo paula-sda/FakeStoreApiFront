@@ -1,7 +1,9 @@
-"use client"; // esto es clave para que sea un Client Component
+"use client";
 import { useEffect, useState } from "react";
 import { Producto } from "../utils/getProductos";
 import CardProducto from "../components/CardProducto";
+
+type ApiResponse = Producto[] | { error: string };
 
 export default function Home() {
   const [productos, setProductos] = useState<Producto[]>([]);
@@ -9,13 +11,14 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("https://fakestoreapi.com/products")
-      .then(res => {
-        if (!res.ok) throw new Error("Error al obtener total de productos");
-        return res.json();
-      })
-      .then((data: Producto[]) => {
-        setProductos(data);
+    fetch("/api/productos")
+      .then(res => res.json())
+      .then((data: ApiResponse) => {
+        if ("error" in data) {
+          setError(data.error);
+        } else {
+          setProductos(data);
+        }
         setLoading(false);
       })
       .catch(err => {
