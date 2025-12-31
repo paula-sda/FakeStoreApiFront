@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import ProductImage from "@/app/components/ProductImage";
 import ProductInfo from "@/app/components/ProductInfo";
 
@@ -14,8 +15,9 @@ interface Producto {
   image: string;
 }
 
-export default function ProductoPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProductoPage() {
+  const params = useParams();
+  const id = params.id;
   const [producto, setProducto] = useState<Producto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
