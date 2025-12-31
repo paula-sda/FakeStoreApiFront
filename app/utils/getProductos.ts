@@ -10,14 +10,20 @@ export interface Producto {
 
 // Total de productos disponibles
 export async function getProductos(): Promise<Producto[]> {
-  const res = await fetch("https://fakestoreapi.com/products", {
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache, no-store, must-revalidate",
-    },
-  });
-  if (!res.ok) throw new Error("Error al obtener total de productos");
+  try {
+    const res = await fetch("https://fakestoreapi.com/products", {
+      cache: "no-store",
+    });
 
-  const all = await res.json();
-  return all;
+    if (!res.ok) {
+      console.error("Error HTTP al obtener productos:", res.status);
+      return []; // Devolver array vacío en lugar de lanzar error
+    }
+
+    const all = await res.json();
+    return all;
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    return []; // Devolver array vacío en caso de error de red u otros
+  }
 }
