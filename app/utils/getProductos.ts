@@ -11,22 +11,37 @@ export interface Producto {
 // Total de productos disponibles
 export async function getProductos(): Promise<Producto[]> {
   try {
+    console.log("Iniciando fetch a fakestoreapi.com/products...");
     const res = await fetch("https://fakestoreapi.com/products", {
       cache: "no-store",
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
       },
     });
+    
+    console.log(`Respuesta recibida. Status: ${res.status} ${res.statusText}`);
 
     if (!res.ok) {
-      console.error("Error HTTP al obtener productos:", res.status);
-      return []; // Devolver array vacío en lugar de lanzar error
+      console.error("Error HTTP no 'ok' al obtener productos:", res.status);
+      const errorBody = await res.text();
+      console.error("Cuerpo de la respuesta de error:", errorBody);
+      return [];
     }
 
-    const all = await res.json();
+    const responseBody = await res.text();
+    console.log("Cuerpo de la respuesta (primeros 500 caracteres):", responseBody.substring(0, 500));
+
+    if (!responseBody) {
+        console.log("El cuerpo de la respuesta está vacío. Devolviendo array vacío.");
+        return [];
+    }
+    
+    const all = JSON.parse(responseBody);
+    console.log(`Parseo JSON exitoso. Se encontraron ${all.length} productos.`);
     return all;
+
   } catch (error) {
-    console.error("Error al obtener productos:", error);
-    return []; // Devolver array vacío en caso de error de red u otros
+    console.error("Error catastrófico en getProductos:", error);
+    return [];
   }
 }
