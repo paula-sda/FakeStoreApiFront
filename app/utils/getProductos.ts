@@ -12,6 +12,9 @@ export interface Producto {
 export async function getProductos(): Promise<Producto[]> {
   const res = await fetch("https://fakestoreapi.com/products", {
     cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+    },
   });
   if (!res.ok) throw new Error("Error al obtener total de productos");
 
