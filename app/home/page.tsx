@@ -1,18 +1,42 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import CardProducto from "../components/CardProducto";
-import { getProductos, Producto } from "../utils/getProductos";
+import { Producto } from "../utils/getProductos";
 
-export const dynamic = 'force-dynamic';
-
-export default async function Home() {
-  let productos: Producto[] = [];
-  let error = null;
-
+async function fetchProductos(): Promise<Producto[]> {
   try {
-    productos = await getProductos();
-  } catch (err) {
-    // El error ya se maneja y loggea dentro de getProductos
-    // por lo que no es necesario un log adicional aquí.
-    error = "Error al cargar los productos. Por favor, intente más tarde.";
+    // Esta llamada ahora se hace desde el navegador del cliente
+    const res = await fetch("https://fakestoreapi.com/products");
+    if (!res.ok) {
+      console.error("Error al obtener los productos desde el cliente:", res.status);
+      return [];
+    }
+    return await res.json();
+  } catch (error) {
+    console.error("Error en el fetch del cliente:", error);
+    return [];
+  }
+}
+
+export default function Home() {
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchProductos().then(data => {
+      if (data.length > 0) {
+        setProductos(data);
+      } else {
+        setError("No se pudieron cargar los productos o no hay disponibles.");
+      }
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return <p className="text-center py-10">Cargando productos...</p>;
   }
 
   return (
