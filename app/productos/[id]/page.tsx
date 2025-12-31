@@ -1,22 +1,50 @@
+'use client'; // Clave: Convertimos la página de detalle en un Componente de Cliente
+
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { getProductoById } from '../../utils/getProductoById';
+import { Producto } from '../../utils/getProductos';
 
-// Esta es ahora una página renderizada en el SERVIDOR
-export default async function ProductoDetallePage({ params }: { params: { id: string } }) {
+export default function ProductoDetallePage({ params }: { params: { id: string } }) {
   const { id } = params;
-  const producto = await getProductoById(id);
+  const [producto, setProducto] = useState<Producto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Si el producto no se encuentra (la API devuelve null)
-  if (!producto) {
-    return (
-      <div className="text-center py-10">
-        <h1 className="text-2xl font-bold">Producto no encontrado</h1>
-        <p className="text-gray-500">No se pudo encontrar el producto con el ID especificado.</p>
-      </div>
-    );
+  useEffect(() => {
+    if (id) {
+      // La petición se hace desde el NAVEGADOR del usuario, evitando el bloqueo
+      fetch(`https://fakestoreapi.com/products/${id}`)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          setProducto(data);
+        })
+        .catch(e => {
+          console.error(`Error al obtener el producto ${id} desde el cliente:`, e);
+          setError("No se pudo encontrar el producto.");
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-center py-10">Cargando detalle del producto...</p>;
   }
 
-  // Si encontramos el producto, lo mostramos
+  if (error) {
+    return <p className="text-center text-red-500 py-10">{error}</p>;
+  }
+
+  if (!producto) {
+    return <p className="text-center text-gray-500 py-10">Producto no encontrado.</p>;
+  }
+
   return (
     <div className="container mx-auto px-6 py-10">
       <div className="bg-white shadow-lg rounded-lg overflow-hidden md:flex">
@@ -27,7 +55,6 @@ export default async function ProductoDetallePage({ params }: { params: { id: st
             fill
             style={{ objectFit: 'contain' }}
             sizes="(max-width: 768px) 100vw, 50vw"
-            priority // Prioridad para la imagen principal de la página
           />
         </div>
         <div className="md:w-1/2 p-8 flex flex-col justify-center">
