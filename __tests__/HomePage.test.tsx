@@ -1,21 +1,28 @@
 import { render, screen } from "@testing-library/react";
-import HomePage from "../app/home/page"; // Ajusta según tu estructura
-import React from "react";
+import Home from "../app/home/page";
 
-// Mock de getProductos
-jest.mock("../app/utils/getProductos", () => ({
-  getProductos: jest.fn().mockResolvedValue([
-    { id: "1", title: "Producto 1", price: 10, image: "/img1.png" },
-    { id: "2", title: "Producto 2", price: 20, image: "/img2.png" },
-  ]),
-}));
+describe("Home", () => {
+  beforeEach(() => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      json: async () => [
+        { id: 1, title: "Producto 1", price: 10, image: "/img1.png" },
+        { id: 2, title: "Producto 2", price: 20, image: "/img2.png" },
+      ],
+    } as any);
+  });
 
-describe("HomePage", () => {
-  it("muestra los productos correctamente", async () => {
-    const home = await HomePage();
-    render(home);
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
-    // findByText ya devuelve una promesa, así que usamos await
+  it("muestra los productos después de cargarlos", async () => {
+    render(<Home />);
+
+    // primero aparece el loading
+    expect(screen.getByText("Cargando productos...")).toBeInTheDocument();
+
+    // luego aparecen los productos
     expect(await screen.findByText("Producto 1")).toBeInTheDocument();
     expect(await screen.findByText("Producto 2")).toBeInTheDocument();
   });
