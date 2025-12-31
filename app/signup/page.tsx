@@ -24,18 +24,46 @@ export default function SignupPage() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } }
-    });
+    try {
+      // Verificar si el email ya existe en la tabla 'profiles'
+      const { data: existingUser } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .single();
 
-    if (error) {
-      setMsg({ type: 'error', text: error.message });
-    } else if (data.user) {
-      setMsg({ type: 'success', text: `Cuenta creada. ¡Bienvenido ${name}!` });
-      setTimeout(() => router.push("/"), 1500);
-      setEmail(""); setName(""); setPass("");
+      if (existingUser) {
+        setMsg({ type: 'error', text: "Esta cuenta ya existe." });
+        setLoading(false);
+        return;
+      }
+
+      // Crear la cuenta en Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } }
+      });
+
+      if (error) {
+        setMsg({ type: 'error', text: error.message });
+        setLoading(false);
+        return;
+      }
+
+      if (data.user) {
+        //Registrar el usuario en la tabla 'profiles'
+        await supabase.from('profiles').insert([{ email, name }]);
+
+        setMsg({ type: 'success', text: "Cuenta creada correctamente. Revisa la confirmación en tu email." });
+        setEmail(""); setName(""); setPass("");
+
+        // Redirigir al inicio de sesión después de 1.5 segundos
+        setTimeout(() => router.push("/"), 1500);
+      }
+    } catch (err) {
+      setMsg({ type: 'error', text: "Ocurrió un error al crear la cuenta." });
+      setLoading(false);
     }
 
     setLoading(false);
