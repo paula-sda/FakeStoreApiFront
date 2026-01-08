@@ -10,7 +10,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('https://backstoreapi.onrender.com/api/products')
+    fetch('https://backstoreapi.onrender.com/api/products', {mode:'cors', credentials: 'omit', headers:{'Accept': 'application/json'}})
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
