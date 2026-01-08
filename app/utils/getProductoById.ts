@@ -4,7 +4,7 @@ import { Producto } from './getProductos';
 export async function getProductoById(id: string): Promise<Producto | null> {
   try {
     console.log(`Iniciando fetch en servidor para producto ${id} con User-Agent reforzado...`);
-    const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
+    const res = await fetch(`https://backstoreapi.onrender.com/api/products/${id}`, {
       cache: "no-store",
       headers: {
         'Accept': 'application/json, text/plain, */*',

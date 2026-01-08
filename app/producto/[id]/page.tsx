@@ -26,7 +26,7 @@ export default function ProductoPage() {
     if (id) {
       const fetchProducto = async () => {
         try {
-          const response = await fetch(`https://fakestoreapi.com/products/${id}`);
+          const response = await fetch(`https://backstoreapi.onrender.com/api/products/${id}`);
           if (!response.ok) {
             throw new Error(`Error HTTP al obtener producto ${id}: ${response.status}`);
           }

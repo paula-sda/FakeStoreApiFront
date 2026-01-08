@@ -12,7 +12,7 @@ export interface Producto {
 export async function getProductos(): Promise<Producto[]> {
   try {
     console.log("Iniciando fetch a fakestoreapi.com/products con User-Agent reforzado...");
-    const res = await fetch("https://fakestoreapi.com/products", {
+    const res = await fetch("https://backstoreapi.onrender.com/api/products", {
       cache: "no-store",
       headers: {
         'Accept': 'application/json, text/plain, */*',

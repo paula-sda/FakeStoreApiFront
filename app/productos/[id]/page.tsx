@@ -13,7 +13,7 @@ export default function ProductoDetallePage({ params }: { params: { id: string }
   useEffect(() => {
     if (id) {
       // La petición se hace desde el NAVEGADOR del usuario, evitando el bloqueo
-      fetch(`https://fakestoreapi.com/products/${id}`)
+      fetch(`https://backstoreapi.onrender.com/api/products/${id}`)
         .then(res => {
           if (!res.ok) {
             throw new Error(`HTTP error! status: ${res.status}`);

@@ -10,8 +10,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // La petición se hace desde el NAVEGADOR del usuario, evitando el bloqueo
-    fetch('https://fakestoreapi.com/products')
+    fetch('https://backstoreapi.onrender.com/api/products')
       .then(res => {
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -22,7 +21,7 @@ export default function Home() {
         setProductos(data);
       })
       .catch(e => {
-        console.error("Error al obtener productos desde el cliente:", e);
+        console.error(e);
         setError("No se pudieron cargar los productos. Intenta recargar la página.");
       })
       .finally(() => {
